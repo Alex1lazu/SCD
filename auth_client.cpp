@@ -5,15 +5,20 @@
  */
 
 #include "auth.h"
+#include <iostream>
+#include <sstream>
+#include <fstream>
 
+using namespace std;
 
 void
-auth_1(char *host)
+auth_1(char *host, char *client_file)
 {
 	CLIENT *clnt;
 	int  *result_1;
 	intermediar  afisare_1_arg;
-	printf("test\n");
+
+
 #ifndef	DEBUG
 	clnt = clnt_create (host, AUTH, A1, "udp");
 	if (clnt == NULL) {
@@ -21,6 +26,16 @@ auth_1(char *host)
 		exit (1);
 	}
 #endif	/* DEBUG */
+
+	ifstream in(client_file);
+	string line;
+	while (getline(in, line)) {
+		stringstream ss(line);
+		string id, action, res;
+		getline(ss, id, ','), getline(ss, action, ','), getline(ss, res, ',');
+		cout << id << action << res << '\n';
+	}
+
 	result_1 = afisare_1(&afisare_1_arg, clnt);
 	if (result_1 == (int *) NULL) {
 		clnt_perror (clnt, "call failed");
@@ -34,13 +49,14 @@ auth_1(char *host)
 int
 main (int argc, char *argv[])
 {
-	char *host;
+	char *host, *client_file;
 
-	if (argc < 2) {
-		printf ("usage: %s server_host\n", argv[0]);
+	if (argc < 3) {
+		printf ("usage: %s server_host client_file\n", argv[0]);
 		exit (1);
 	}
 	host = argv[1];
-	auth_1 (host);
+	client_file = argv[2];
+	auth_1 (host, client_file);
 exit (0);
 }

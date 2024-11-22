@@ -5,29 +5,18 @@
  */
 
 #include "auth.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unordered_map>
+#include <iostream>
+#include <sstream>
+#include <fstream>
+
 using namespace std;
 
 void
-auth_1(char *host, char *op_file)
+auth_1(char *host, char *client_file)
 {
 	CLIENT *clnt;
 	int  *result_1;
 	intermediar  afisare_1_arg;
-
-	FILE *file;
-	char line[256];
-	file = fopen(op_file, "r");
-
-	char id[20], action[20], resource[20]; 
-	while (fgets(line, sizeof(line), file)) {
-		int n = sscanf(line, "%19[^,],%19[^,],%19s", id, action, resource);
-		if (n == 3){
-			printf("%s %s %s\n", id, action, resource);
-		}
-	}
 
 
 #ifndef	DEBUG
@@ -37,6 +26,15 @@ auth_1(char *host, char *op_file)
 		exit (1);
 	}
 #endif	/* DEBUG */
+
+	ifstream in(client_file);
+	string line;
+	while (getline(in, line)) {
+		stringstream ss(line);
+		string id, action, res;
+		getline(ss, id, ','), getline(ss, action, ','), getline(ss, res, ',');
+		cout << id << action << res << '\n';
+	}
 
 	result_1 = afisare_1(&afisare_1_arg, clnt);
 	if (result_1 == (int *) NULL) {
@@ -51,14 +49,14 @@ auth_1(char *host, char *op_file)
 int
 main (int argc, char *argv[])
 {
-	char *host, *op_file;
+	char *host, *client_file;
 
-	if (argc != 3) {
-		printf ("usage: %s server_host operation_file\n", argv[0]);
+	if (argc < 3) {
+		printf ("usage: %s server_host client_file\n", argv[0]);
 		exit (1);
 	}
 	host = argv[1];
-	op_file = argv[2];
-	auth_1 (host, op_file);
-	exit (0);
+	client_file = argv[2];
+	auth_1 (host, client_file);
+exit (0);
 }

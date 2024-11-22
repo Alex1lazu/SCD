@@ -10,6 +10,7 @@ int *
 afisare_1_svc(intermediar *argp, struct svc_req *rqstp)
 {
 	static int  result;
+
 	/*
 	 * insert server code here
 	 */
