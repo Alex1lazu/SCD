@@ -4,6 +4,7 @@
  */
 
 #include "auth.h"
+#include "auth_server_shared.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <rpc/pmap_clnt.h>

@@ -6,6 +6,7 @@
 
 #include "auth.h"
 #include <iostream>
+#include "auth_server_shared.h"
 
 using namespace std;
 
@@ -13,14 +14,6 @@ char **
 afisare_1_svc(request *argp, struct svc_req *rqstp)
 {
 	static char * result;
-
-	cout << argp->action << argp->id << argp->res <<'\n';
-
-	/*
-	 * insert server code here
-	 */
-
-
 
 	return &result;
 }
