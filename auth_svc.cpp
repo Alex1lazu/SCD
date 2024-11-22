@@ -71,7 +71,7 @@ static void
 auth_1(struct svc_req *rqstp, register SVCXPRT *transp)
 {
 	union {
-		intermediar afisare_1_arg;
+		request afisare_1_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -83,7 +83,7 @@ auth_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		return;
 
 	case afisare:
-		_xdr_argument = (xdrproc_t) xdr_intermediar;
+		_xdr_argument = (xdrproc_t) xdr_request;
 		_xdr_result = (xdrproc_t) xdr_int;
 		local = (char *(*)(char *, struct svc_req *)) afisare_1_svc;
 		break;

@@ -15,10 +15,6 @@ void
 auth_1(char *host, char *client_file)
 {
 	CLIENT *clnt;
-	int  *result_1;
-	intermediar  afisare_1_arg;
-
-
 #ifndef	DEBUG
 	clnt = clnt_create (host, AUTH, A1, "udp");
 	if (clnt == NULL) {
@@ -26,20 +22,24 @@ auth_1(char *host, char *client_file)
 		exit (1);
 	}
 #endif	/* DEBUG */
-
+	cout << client_file << '\n';
 	ifstream in(client_file);
 	string line;
 	while (getline(in, line)) {
+		
 		stringstream ss(line);
 		string id, action, res;
 		getline(ss, id, ','), getline(ss, action, ','), getline(ss, res, ',');
-		cout << id << action << res << '\n';
+		request req;
+		req.action = (char *)action.c_str();
+		req.id = (char *)id.c_str();
+		req.res = (char *)res.c_str();
+
+		string result = *afisare_1(&req, clnt);
+		cout << id << action << res << result << '\n';
 	}
 
-	result_1 = afisare_1(&afisare_1_arg, clnt);
-	if (result_1 == (int *) NULL) {
-		clnt_perror (clnt, "call failed");
-	}
+
 #ifndef	DEBUG
 	clnt_destroy (clnt);
 #endif	 /* DEBUG */

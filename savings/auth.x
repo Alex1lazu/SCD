@@ -6,6 +6,6 @@ struct request {
 
 program AUTH {
     version A1 {
-        string<> afisare(request) = 1;
+        string afisare(request) = 1;
     } = 1;
 } = 0x23451111;

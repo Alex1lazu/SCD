@@ -1,10 +1,11 @@
-struct intermediar {
-    int a1;
-    int a2;
+struct request {
+    string id<>;
+    string action<>;
+    string res<>;
 };
 
 program AUTH {
     version A1 {
-        int afisare(intermediar) = 1;
+        string afisare(request) = 1;
     } = 1;
 } = 0x23451111;
