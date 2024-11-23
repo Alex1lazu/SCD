@@ -25,8 +25,9 @@
 using namespace std;	
 
 
-unordered_map<string, unordered_map<string, string>> clients;
+unordered_map<std::string, Client> clients;
 vector<string> resources;
+vector<string> approvals_lines;
 void parse_input(char **argv) {
 	// 0 - ids, 1 - resources, 2 - approvals
 	ifstream id_file(argv[1]);
@@ -44,22 +45,13 @@ void parse_input(char **argv) {
     no_clients_stream >> number_of_clients;
 	no_resources_stream >> number_of_resources;
 
+	while (getline(aprov_file, aprov)) {
+		approvals_lines.push_back(aprov);
+	}
+
 	for (int i = 0; i < number_of_clients; i++) {
-		unordered_map<string, string> permissions;
-
 		getline(id_file, id);
-		getline(aprov_file, aprov);
-		stringstream ss(aprov);
-		string resource, permission;
-
-		while (getline(ss, resource, ',')) {
-			getline(ss, permission, ',');
-			if (resource == "*")
-				break;
-			permissions[resource] = permission;
-		}
-
-		clients[id] = permissions;
+		clients[id] = Client();
 	}
 
 	for (int i = 0; i < number_of_resources; i++) {
@@ -113,7 +105,7 @@ void print_data() {
 	cout << "Clients and their permissions:" << endl;
     for (const auto& client : clients) {
         cout << "Client ID: " << client.first << endl;
-        for (const auto& perm : client.second) {
+        for (const auto& perm : client.second.permissions) {
             cout << "  Resource: " << perm.first << ", Permission: " << perm.second << endl;
         }
     }

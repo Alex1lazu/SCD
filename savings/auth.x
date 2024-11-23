@@ -4,8 +4,12 @@ struct request {
     string res<>;
 };
 
+struct answer {
+    string resp<>;
+};
+
 program AUTH {
     version A1 {
-        string afisare(request) = 1;
+        int afisare(string) = 1;
     } = 1;
-} = 0x23451111;
+} = 1;

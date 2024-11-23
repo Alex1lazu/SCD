@@ -21,19 +21,24 @@ struct request {
 };
 typedef struct request request;
 
-#define AUTH 0x23451111
+struct answer {
+	char *resp;
+};
+typedef struct answer answer;
+
+#define AUTH 1
 #define A1 1
 
 #if defined(__STDC__) || defined(__cplusplus)
 #define afisare 1
-extern  char ** afisare_1(request *, CLIENT *);
-extern  char ** afisare_1_svc(request *, struct svc_req *);
+extern  int * afisare_1(char **, CLIENT *);
+extern  int * afisare_1_svc(char **, struct svc_req *);
 extern int auth_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
 #define afisare 1
-extern  char ** afisare_1();
-extern  char ** afisare_1_svc();
+extern  int * afisare_1();
+extern  int * afisare_1_svc();
 extern int auth_1_freeresult ();
 #endif /* K&R C */
 
@@ -41,9 +46,11 @@ extern int auth_1_freeresult ();
 
 #if defined(__STDC__) || defined(__cplusplus)
 extern  bool_t xdr_request (XDR *, request*);
+extern  bool_t xdr_answer (XDR *, answer*);
 
 #else /* K&R C */
 extern bool_t xdr_request ();
+extern bool_t xdr_answer ();
 
 #endif /* K&R C */
 

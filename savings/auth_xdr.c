@@ -18,3 +18,13 @@ xdr_request (XDR *xdrs, request *objp)
 		 return FALSE;
 	return TRUE;
 }
+
+bool_t
+xdr_answer (XDR *xdrs, answer *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->resp, ~0))
+		 return FALSE;
+	return TRUE;
+}

@@ -11,67 +11,16 @@
 #include <memory.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <unordered_map>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <sstream>
+
 #ifndef SIG_PF
 #define SIG_PF void(*)(int)
 #endif
-
-using namespace std;	
-
-
-unordered_map<string, unordered_map<string, string>> clients;
-vector<string> resources;
-void parse_input(char **argv) {
-	// 0 - ids, 1 - resources, 2 - approvals
-	ifstream id_file(argv[1]);
-	ifstream res_file(argv[2]);
-	ifstream aprov_file(argv[3]);
-	
-
-	string id, res, aprov;
-	int number_of_clients, number_of_resources;
-
-	getline(id_file, id);
-	getline(res_file, res);
-	istringstream no_clients_stream(id);
-	istringstream no_resources_stream(res);
-    no_clients_stream >> number_of_clients;
-	no_resources_stream >> number_of_resources;
-
-	for (int i = 0; i < number_of_clients; i++) {
-		unordered_map<string, string> permissions;
-
-		getline(id_file, id);
-		getline(aprov_file, aprov);
-		stringstream ss(aprov);
-		string resource, permission;
-
-		while (getline(ss, resource, ',')) {
-			getline(ss, permission, ',');
-			if (resource == "*")
-				break;
-			permissions[resource] = permission;
-		}
-
-		clients[id] = permissions;
-	}
-
-	for (int i = 0; i < number_of_resources; i++) {
-		getline(res_file, res);
-		resources.push_back(res);
-	}
-}
 
 static void
 auth_1(struct svc_req *rqstp, register SVCXPRT *transp)
 {
 	union {
-		request afisare_1_arg;
+		char *afisare_1_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -83,7 +32,7 @@ auth_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		return;
 
 	case afisare:
-		_xdr_argument = (xdrproc_t) xdr_request;
+		_xdr_argument = (xdrproc_t) xdr_wrapstring;
 		_xdr_result = (xdrproc_t) xdr_int;
 		local = (char *(*)(char *, struct svc_req *)) afisare_1_svc;
 		break;
@@ -108,28 +57,12 @@ auth_1(struct svc_req *rqstp, register SVCXPRT *transp)
 	return;
 }
 
-void print_data() {
-	cout << "Clients and their permissions:" << endl;
-    for (const auto& client : clients) {
-        cout << "Client ID: " << client.first << endl;
-        for (const auto& perm : client.second) {
-            cout << "  Resource: " << perm.first << ", Permission: " << perm.second << endl;
-        }
-    }
-}
-
 int
 main (int argc, char **argv)
 {
 	register SVCXPRT *transp;
 
 	pmap_unset (AUTH, A1);
-
-	if (argc < 4) {
-		printf ("usage: %s user_ids resources approvals\n", argv[0]);
-		exit (1);
-	}
-	parse_input(argv);
 
 	transp = svcudp_create(RPC_ANYSOCK);
 	if (transp == NULL) {

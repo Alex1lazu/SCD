@@ -5,15 +5,66 @@
  */
 
 #include "auth.h"
+#include "token.h"
+#include <fstream>
+#include <sstream>
 #include <iostream>
 #include "auth_server_shared.h"
 
 using namespace std;
 
+void parse_permissions(string line, Client& client) {
+	unordered_map<string, string> permissions;
+	stringstream ss(line);
+	string resource, permission;
+
+	while (getline(ss, resource, ',')) {
+		getline(ss, permission, ',');
+		if (resource == "*")
+			break;
+		permissions[resource] = permission;
+	}
+
+	client.permissions = permissions;
+}
+
 char **
 afisare_1_svc(request *argp, struct svc_req *rqstp)
 {
-	static char * result;
+	char **result_double = (char**)malloc(sizeof(*result_double));
+	*result_double = (char*)malloc(sizeof(char));
+	*result_double[0] = '\0';
+	return result_double;
+	static char *result;
+	static string res_str;
+	static int req_op_index = 0;
+
+	string action(argp->action), id(argp->id), res(argp->res);
+
+	if (action == "REQUEST") {
+		cout << "BEGIN " << id << " AUTHZ" << '\n';
+		if (clients.find(id) == clients.end()) {
+			res_str = "USER_NOT_FOUND";
+		} else {
+			Client client = clients[id];
+			
+			parse_permissions(approvals_lines[req_op_index++], client);
+
+			client.req_token = generate_access_token(argp->id);
+			cout << "  RequestToken = " << client.req_token << "\n";
+			if (!client.permissions.size()) {
+				res_str = "REQUEST_DENIED";
+			} else {
+				client.access_token = generate_access_token((char *)client.req_token.c_str());
+				res_str = client.req_token + " -> " + client.access_token;
+				cout << "  AccessToken = " << client.access_token << '\n';
+			}
+		}
+	}
+
+	// result = strdup(res_str.c_str());
+	// result = strdup("test");
+
 
 	return &result;
 }

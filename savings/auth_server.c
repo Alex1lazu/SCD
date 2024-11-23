@@ -5,22 +5,15 @@
  */
 
 #include "auth.h"
-#include <iostream>
 
-using namespace std;
-
-char **
-afisare_1_svc(request *argp, struct svc_req *rqstp)
+int *
+afisare_1_svc(char **argp, struct svc_req *rqstp)
 {
-	static char * result;
-
-	cout << argp->action << argp->id << argp->res <<'\n';
+	static int  result;
 
 	/*
 	 * insert server code here
 	 */
-
-
 
 	return &result;
 }

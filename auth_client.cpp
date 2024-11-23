@@ -30,13 +30,18 @@ auth_1(char *host, char *client_file)
 		stringstream ss(line);
 		string id, action, res;
 		getline(ss, id, ','), getline(ss, action, ','), getline(ss, res, ',');
-		request req;
+	request req;
 		req.action = (char *)action.c_str();
 		req.id = (char *)id.c_str();
 		req.res = (char *)res.c_str();
 
-		string result = *afisare_1(&req, clnt);
-		cout << id << action << res << result << '\n';
+		char **res_char = afisare_1(&req, clnt);
+		if (res_char == (char**) NULL) {
+			cout << "Failed on line: " << line<<'\n';
+		} else {
+			string result = *afisare_1(&req, clnt);
+			cout << result;
+		}
 	}
 
 
