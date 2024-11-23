@@ -10,11 +10,27 @@ xdr_request (XDR *xdrs, request *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, &objp->id, ~0))
+	int i;
+	 if (!xdr_vector (xdrs, (char *)objp->id, 100,
+		sizeof (char), (xdrproc_t) xdr_char))
 		 return FALSE;
-	 if (!xdr_string (xdrs, &objp->action, ~0))
+	 if (!xdr_vector (xdrs, (char *)objp->action, 100,
+		sizeof (char), (xdrproc_t) xdr_char))
 		 return FALSE;
-	 if (!xdr_string (xdrs, &objp->res, ~0))
+	 if (!xdr_vector (xdrs, (char *)objp->res, 100,
+		sizeof (char), (xdrproc_t) xdr_char))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_response (XDR *xdrs, response *objp)
+{
+	register int32_t *buf;
+
+	int i;
+	 if (!xdr_vector (xdrs, (char *)objp->msg, 100,
+		sizeof (char), (xdrproc_t) xdr_char))
 		 return FALSE;
 	return TRUE;
 }

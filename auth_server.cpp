@@ -28,14 +28,10 @@ void parse_permissions(string line, Client& client) {
 	client.permissions = permissions;
 }
 
-char **
+response *
 afisare_1_svc(request *argp, struct svc_req *rqstp)
 {
-	char **result_double = (char**)malloc(sizeof(*result_double));
-	*result_double = (char*)malloc(sizeof(char));
-	*result_double[0] = '\0';
-	return result_double;
-	static char *result;
+	static response result;
 	static string res_str;
 	static int req_op_index = 0;
 
@@ -58,13 +54,11 @@ afisare_1_svc(request *argp, struct svc_req *rqstp)
 				client.access_token = generate_access_token((char *)client.req_token.c_str());
 				res_str = client.req_token + " -> " + client.access_token;
 				cout << "  AccessToken = " << client.access_token << '\n';
+				
 			}
 		}
 	}
-
-	// result = strdup(res_str.c_str());
-	// result = strdup("test");
-
-
+	fflush(stdout);
+	strncpy(result.msg, res_str.c_str(), sizeof(result.msg));
 	return &result;
 }

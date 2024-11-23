@@ -6,10 +6,11 @@
 
 #include "auth.h"
 
-int *
-afisare_1_svc(intermediar *argp, struct svc_req *rqstp)
+response *
+afisare_1_svc(request *argp, struct svc_req *rqstp)
 {
-	static int  result;
+	static response  result;
+	strcpy(result.msg, "testare");
 
 	/*
 	 * insert server code here

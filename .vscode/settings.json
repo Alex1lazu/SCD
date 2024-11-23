@@ -124,6 +124,7 @@
     "__nullptr": "cpp",
     "__config": "cpp",
     "auth.h": "c",
-    "clnt_stat.h": "c"
+    "clnt_stat.h": "c",
+    "in.h": "c"
   }
 }

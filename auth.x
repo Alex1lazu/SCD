@@ -1,11 +1,15 @@
 struct request {
-    string id<>;
-    string action<>;
-    string res<>;
+    char id[100];
+    char action[100];
+    char res[100];
+};
+
+struct response {
+    char msg[100];
 };
 
 program AUTH {
     version A1 {
-        string afisare(request) = 1;
+        response afisare(request) = 1;
     } = 1;
-} = 0x23451111;
+} = 1;

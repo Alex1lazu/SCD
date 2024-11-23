@@ -12,39 +12,35 @@ SOURCES_SVC.c =
 SOURCES_SVC.h = 
 SOURCES.x = auth.x
 
-TARGETS_SVC.c = auth_svc.cpp auth_server.cpp auth_xdr.cpp
-TARGETS_CLNT.c = auth_clnt.cpp auth_client.cpp auth_xdr.cpp 
-TARGETS = auth.h auth_xdr.cpp auth_clnt.cpp auth_svc.cpp auth_client.cpp auth_server.cpp
+TARGETS_SVC.c = auth_svc.c auth_server.c auth_xdr.c 
+TARGETS_CLNT.c = auth_clnt.c auth_client.c auth_xdr.c 
+TARGETS = auth.h auth_xdr.c auth_clnt.c auth_svc.c auth_client.c auth_server.c
 
-OBJECTS_CLNT = $(SOURCES_CLNT.cpp:%.cpp=%.o) $(TARGETS_CLNT.cpp:%.cpp=%.o)
-OBJECTS_SVC = $(SOURCES_SVC.cpp:%.cpp=%.o) $(TARGETS_SVC.cpp:%.cpp=%.o)
+OBJECTS_CLNT = $(SOURCES_CLNT.c:%.c=%.o) $(TARGETS_CLNT.c:%.c=%.o)
+OBJECTS_SVC = $(SOURCES_SVC.c:%.c=%.o) $(TARGETS_SVC.c:%.c=%.o)
 # Compiler flags 
 
 CFLAGS += -g -I/usr/include/tirpc
 LDLIBS += -lnsl -ltirpc
 RPCGENFLAGS = -C -a
 
-
 # Targets 
 
 all : $(CLIENT) $(SERVER)
 
-build: 
-	rpcgen $(RPCGENFLAGS) $(SOURCES.x)
-
 $(TARGETS) : $(SOURCES.x) 
 	rpcgen $(RPCGENFLAGS) $(SOURCES.x)
 
-$(OBJECTS_CLNT) : $(SOURCES_CLNT.cpp) $(SOURCES_CLNT.h) $(TARGETS_CLNT.cpp) 
+$(OBJECTS_CLNT) : $(SOURCES_CLNT.c) $(SOURCES_CLNT.h) $(TARGETS_CLNT.c) 
 
-$(OBJECTS_SVC) : $(SOURCES_SVC.cpp) $(SOURCES_SVC.h) $(TARGETS_SVC.cpp) 
+$(OBJECTS_SVC) : $(SOURCES_SVC.c) $(SOURCES_SVC.h) $(TARGETS_SVC.c) 
 
 $(CLIENT) : $(OBJECTS_CLNT) 
-	$(LINK.cpp) -o $(CLIENT) $(OBJECTS_CLNT) $(LDLIBS) 
+	$(LINK.c) -o $(CLIENT) $(OBJECTS_CLNT) $(LDLIBS) 
 
 $(SERVER) : $(OBJECTS_SVC) 
-	$(LINK.cpp) -o $(SERVER) $(OBJECTS_SVC) $(LDLIBS)
+	$(LINK.c) -o $(SERVER) $(OBJECTS_SVC) $(LDLIBS)
 
-clean:
-	 $(RM) core $(OBJECTS_CLNT) $(OBJECTS_SVC) $(CLIENT) $(SERVER)
+ clean:
+	 $(RM) core $(TARGETS) $(OBJECTS_CLNT) $(OBJECTS_SVC) $(CLIENT) $(SERVER)
 

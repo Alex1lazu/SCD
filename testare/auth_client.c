@@ -11,8 +11,8 @@ void
 auth_1(char *host)
 {
 	CLIENT *clnt;
-	int  *result_1;
-	intermediar  afisare_1_arg;
+	response  *result_1;
+	request  afisare_1_arg;
 
 #ifndef	DEBUG
 	clnt = clnt_create (host, AUTH, A1, "udp");
@@ -23,9 +23,10 @@ auth_1(char *host)
 #endif	/* DEBUG */
 
 	result_1 = afisare_1(&afisare_1_arg, clnt);
-	if (result_1 == (int *) NULL) {
+	if (result_1 == (response *) NULL) {
 		clnt_perror (clnt, "call failed");
 	}
+	printf("result: %s\n", result_1->msg);
 #ifndef	DEBUG
 	clnt_destroy (clnt);
 #endif	 /* DEBUG */

@@ -6,13 +6,31 @@
 #include "auth.h"
 
 bool_t
-xdr_intermediar (XDR *xdrs, intermediar *objp)
+xdr_request (XDR *xdrs, request *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_int (xdrs, &objp->a1))
+	int i;
+	 if (!xdr_vector (xdrs, (char *)objp->id, 100,
+		sizeof (char), (xdrproc_t) xdr_char))
 		 return FALSE;
-	 if (!xdr_int (xdrs, &objp->a2))
+	 if (!xdr_vector (xdrs, (char *)objp->action, 100,
+		sizeof (char), (xdrproc_t) xdr_char))
+		 return FALSE;
+	 if (!xdr_vector (xdrs, (char *)objp->res, 100,
+		sizeof (char), (xdrproc_t) xdr_char))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_response (XDR *xdrs, response *objp)
+{
+	register int32_t *buf;
+
+	int i;
+	 if (!xdr_vector (xdrs, (char *)objp->msg, 100,
+		sizeof (char), (xdrproc_t) xdr_char))
 		 return FALSE;
 	return TRUE;
 }
