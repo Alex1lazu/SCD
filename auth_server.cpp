@@ -28,6 +28,44 @@ void parse_permissions(string line, Client& client) {
 	client.permissions = permissions;
 }
 
+bool check_permission(string permissions, string action) {
+	char needed;
+	if (action == "READ") {
+		needed = 'R';
+	} else if (action == "INSERT") {
+		needed = 'I';
+	} else if (action == "MODIFY") {
+		needed = 'M';
+	} else if (action == "DELETE") {
+		needed = 'D';
+	} else if (action == "EXECUTE") {
+		needed = 'X';
+	} else {
+		return false;
+	}
+	for (auto &c: permissions) {
+		if (c == needed) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool resource_exists(string res) {
+	for (auto &r : resources) {
+		if (r == res) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void print_approval_message(bool approve, string action, string resource, string access_token, int operations_left) {
+	string aprove_message(approve ? "PERMIT (" : "DENY (" );
+	
+	cout << aprove_message << action << "," << resource << "," << access_token << "," << operations_left <<")\n";
+}
+
 response *
 afisare_1_svc(request *argp, struct svc_req *rqstp)
 {
@@ -42,7 +80,7 @@ afisare_1_svc(request *argp, struct svc_req *rqstp)
 		if (clients.find(id) == clients.end()) {
 			res_str = "USER_NOT_FOUND";
 		} else {
-			Client client = clients[id];
+			Client& client = clients[id];
 			
 			parse_permissions(approvals_lines[req_op_index++], client);
 
@@ -54,7 +92,60 @@ afisare_1_svc(request *argp, struct svc_req *rqstp)
 				client.access_token = generate_access_token((char *)client.req_token.c_str());
 				res_str = client.req_token + " -> " + client.access_token;
 				cout << "  AccessToken = " << client.access_token << '\n';
-				
+				client.lifetime = token_lifetime;
+				client.auto_refresh = false;
+				if (res == "1") {
+					client.auto_refresh = true;
+					client.refresh_token = generate_access_token((char *) client.access_token.c_str());
+					res_str += "," + client.refresh_token;
+					cout << "  RefreshToken = " << client.refresh_token << '\n';
+				}
+			}
+		}
+	} else {
+		if (clients.find(id) == clients.end()) {
+			res_str = "USER_NOT_FOUND";
+		} else {
+			Client& client = clients[id];
+			if (client.req_token == "") {
+				print_approval_message(false, action, res, "", 0);
+
+				res_str = "PERMISSION_DENIED";
+			} else {
+				if (client.lifetime == 0) {
+					if (client.auto_refresh) {
+						client.access_token = generate_access_token((char *)client.refresh_token.c_str());
+						client.refresh_token = generate_access_token((char *) client.access_token.c_str());
+					
+						client.lifetime = token_lifetime;
+
+						cout << "BEGIN " << id << " AUTHZ REFRESH" << '\n';
+						cout << "  AccessToken = " << client.access_token << '\n';
+						cout << "  RefreshToken = " << client.refresh_token << '\n';
+				} else {
+						client.req_token = "";
+						client.access_token = "";
+					}
+				}
+			
+
+				if (client.lifetime == 0) {
+					// todo
+					print_approval_message(false, action, res, client.access_token, client.lifetime);
+					res_str = "TOKEN_EXPIRED";
+				} else if (!resource_exists(res)) {
+					// todo
+					print_approval_message(false, action, res, client.access_token, --client.lifetime);
+					res_str = "RESOURCE_NOT_FOUND";
+				} else if (check_permission(client.permissions[res], action)) {
+					
+					print_approval_message(true, action, res, client.access_token, --client.lifetime);
+					res_str = "PERMISSION_GRANTED";
+					
+				} else {
+					print_approval_message(false, action, res, client.access_token, --client.lifetime);
+					res_str = "OPERATION_NOT_PERMITTED";
+				}
 			}
 		}
 	}

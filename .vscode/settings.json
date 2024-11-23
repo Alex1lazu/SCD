@@ -125,6 +125,9 @@
     "__config": "cpp",
     "auth.h": "c",
     "clnt_stat.h": "c",
-    "in.h": "c"
+    "in.h": "c",
+    "filesystem": "cpp",
+    "queue": "cpp",
+    "stack": "cpp"
   }
 }

@@ -23,6 +23,7 @@ using namespace std;
 unordered_map<std::string, Client> clients;
 vector<string> resources;
 vector<string> approvals_lines;
+int token_lifetime;
 void parse_input(char **argv) {
 	// 0 - ids, 1 - resources, 2 - approvals
 	ifstream id_file(argv[1]);
@@ -32,6 +33,7 @@ void parse_input(char **argv) {
 
 	string id, res, aprov;
 	int number_of_clients, number_of_resources;
+	token_lifetime = stoi(string(argv[4]));
 
 	getline(id_file, id);
 	getline(res_file, res);
@@ -113,8 +115,8 @@ main (int argc, char **argv)
 
 	pmap_unset (AUTH, A1);
 
-	if (argc < 4) {
-		printf ("usage: %s user_ids resources approvals\n", argv[0]);
+	if (argc < 5) {
+		printf ("usage: %s user_ids resources approvals token_lifetime\n", argv[0]);
 		exit (1);
 	}
 	parse_input(argv);
